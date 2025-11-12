@@ -159,9 +159,6 @@
         </div>
 
         <div class="nav-right">
-            <div class="nav-item" id="model-status-badge" style="margin-right:12px; color: #fff; font-weight:600;">
-                Modelo: comprobando...
-            </div>
             {% if alerts and alerts|length > 0 %}
                 <div class="nav-item alert-badge">ALERTAS {{ alerts|length }}</div>
             {% endif %}
@@ -170,13 +167,9 @@
                 <div class="nav-item dropdown">
                     <a class="top-link" href="#">Menú ▾</a>
                     <div class="dropdown-content">
-                        <a href="{{ url_for('index') }}">Inicio</a>
                         <a href="{{ url_for('pagina1') }}">Fase del negocio</a>
-                        <a href="{{ url_for('pagina2') }}">Fase de los datos e ingenieria de datos</a>
-                        <a href="{{ url_for('pagina3') }}">Ingenieria y Evalucion del modelo</a>
                         {% if session.get('user') == 'admin' %}
-
-                        <a href="{{ url_for('users') }}">Administrar usuarios</a>
+                            <a href="{{ url_for('users') }}">Administrar usuarios</a>
                             <form action="{{ url_for('reload_model') }}" method="post" style="margin:0;">
                                 <button type="submit" style="width:100%;padding:10px 14px;border:none;background:#2d6a4f;color:white;cursor:pointer;text-align:left;">Recargar modelo</button>
                             </form>
@@ -194,29 +187,6 @@
     <div class="container">
         {% block content %}{% endblock %}
     </div>
-    <script>
-        // Consultar el estado del modelo y actualizar el badge en la navbar
-        async function updateModelBadge(){
-            try{
-                const r = await fetch('/public_model_status');
-                if(!r.ok) throw new Error('status '+r.status);
-                const j = await r.json();
-                const el = document.getElementById('model-status-badge');
-                if(!el) return;
-                if(j.loaded){
-                    el.textContent = 'Modelo: cargado';
-                    el.style.color = '#b7f0c4';
-                } else {
-                    el.textContent = 'Modelo: no disponible';
-                    el.style.color = '#ffd1c1';
-                }
-            }catch(err){
-                const el = document.getElementById('model-status-badge');
-                if(el) { el.textContent = 'Modelo: error'; el.style.color = '#ffd1c1'; }
-            }
-        }
-        // Ejecutar al cargar y cada 20s
-        document.addEventListener('DOMContentLoaded', ()=>{ updateModelBadge(); setInterval(updateModelBadge, 20000); });
-    </script>
+    <!-- Model status badge and polling removed as requested -->
 </body>
 </html>

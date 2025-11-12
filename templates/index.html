@@ -265,7 +265,7 @@ img {
     <p><a href="{{ url_for('usage') }}">Registrar mi consumo</a></p>
         <form id="uploadForm" action="/predict" method="post" enctype="multipart/form-data">
             <input type="file" id="fileInput" name="file" accept="image/*" required>
-            <button type="submit" style="margin-top:15px;">Clasificar imagen</button>
+            <button type="submit" style="margin-top:15px;">TU IMAGEN DEL CONTADOR EN ESTE MOMENTO</button>
         </form>
 
         {% if img_path %}
@@ -304,62 +304,32 @@ img {
 
     <!-- 🔸 Información de AQUA SMART -->
     <div class="info-card">
-        <h2>♻️ ¿Qué hace AQUA SMART?</h2>
-        <p>
-            Este sistema utiliza Inteligencia Artificial y un modelo de Machine Learning 
-            entrenado con miles de imágenes de residuos comunes para reconocer de qué material está hecho un objeto.
-        </p>
-        <p>
-            Al subir o tomar una foto, el modelo analiza sus características visuales y predice si pertenece a una de las siguientes categorías:
-        </p>
-        <ul style="margin-left:20px;">
-            <li>Cartón</li>
-            <li>Papel</li>
-            <li>Vidrio</li>
-            <li>Plástico</li>
-            <li>Metal</li>
-        </ul>
-        <p>
-            El propósito de AQUA SMART es fomentar la educación ambiental 
-            y ayudar a las personas a depositar cada residuo en el contenedor correcto, 
-            promoviendo una cultura de reciclaje responsable y reducción de contaminación.
-        </p>
-        <p style="color:#2d6a4f; font-weight:600;">
-            ¡Cada pequeña acción cuenta para cuidar el planeta!
-        </p>
+            <h2>💧 ¿Qué es AQUA SMART y cómo te ayuda?</h2>
+            <p>
+                AQUA SMART es una herramienta pensada para monitorizar tu consumo de agua de forma simple y práctica. 
+                Te permite registrar lo que llevas gastado en el mes, recibir avisos automáticos si detectamos consumos anómalos
+                y acceder a un historial con recomendaciones para ahorrar.
+            </p>
+
+            <h3 style="margin-top:12px;">Qué hace por ti</h3>
+            <ul style="margin-left:20px;">
+                <li><strong>Registro fácil:</strong> guarda tu consumo actual rápidamente desde tu teléfono o computador.</li>
+                <li><strong>Alertas diarias:</strong> el sistema revisa los consumos y te avisa si hay incrementos inusuales.</li>
+                <li><strong>Detección de fugas:</strong> cuando hay consumos muy superiores al promedio, AQUA SMART te lo notifica como posible fuga.</li>
+                <li><strong>Historial y tendencias:</strong> consulta tus registros anteriores y compara días/meses para entender tu patrón de consumo.</li>
+                <li><strong>Consejos personalizados:</strong> recibe sugerencias prácticas para reducir el gasto y ahorrar agua.</li>
+            </ul>
+
+            <p>
+                En resumen: registra, monitorea y recibe alertas. AQUA SMART te ayuda a ahorrar agua y a identificar problemas en tu instalación antes de que se conviertan en gastos mayores.
+            </p>
+            <p style="color:#2d6a4f; font-weight:600; margin-top:8px;">
+                Comienza registrando tu consumo en "Registrar mi consumo" y recibe las primeras recomendaciones hoy mismo.
+            </p>
     </div>
 </div>
 
-<!-- 🔸 Cuadro con las canecas -->
-<div class="bins-container">
-    <h1>Conoce las Canecas de Reciclaje</h1>
-    <div class="bins-grid">
-        <div class="bin" data-info="verde">
-            <img src="/static/verde.png" alt="Caneca Verde">
-            <p>Verde</p>
-        </div>
-        <div class="bin" data-info="amarillo">
-            <img src="/static/amarillo.png" alt="Caneca Amarilla">
-            <p>Amarillo</p>
-        </div>
-        <div class="bin" data-info="azul">
-            <img src="/static/azul.png" alt="Caneca Azul">
-            <p>Azul</p>
-        </div>
-        <div class="bin" data-info="rojo">
-            <img src="/static/rojo.png" alt="Caneca Roja">
-            <p>Rojo</p>
-        </div>
-    </div>
-
-    <!-- 🔹 Cuadro de información -->
-    <div id="bin-info" class="bin-info-card" style="display:none;">
-        <h2 id="bin-title"></h2>
-        <p id="bin-description"></p>
-        <h3>Ejemplos de residuos:</h3>
-        <ul id="bin-items"></ul>
-    </div>
-</div>
+<!-- Canecas removed as requested -->
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {

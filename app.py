@@ -9,13 +9,21 @@ from datetime import timedelta
 import threading
 from datetime import datetime, date
 import json
-from apscheduler.schedulers.background import BackgroundScheduler
+try:
+    from apscheduler.schedulers.background import BackgroundScheduler
+    SCHEDULER_AVAILABLE = True
+except ImportError:
+    BackgroundScheduler = None
+    SCHEDULER_AVAILABLE = False
+    # logging may not be configured yet, but this will be picked up later
+    print('[WARN] APScheduler no está instalado; las tareas programadas estarán deshabilitadas')
 
 # Variables globales para TensorFlow/modelo
 load_model = None
 image = None
 model = None
 np = None
+MODEL_PATH = Path(__file__).parent / 'garbage_model.h5'
 
 # Intentar importar TensorFlow y NumPy (opcional)
 try:
@@ -73,7 +81,10 @@ if not ALERTS_FILE.exists():
         json.dump([], fh)
 
 # Scheduler para tareas periódicas (comprobación diaria)
-scheduler = BackgroundScheduler()
+if SCHEDULER_AVAILABLE:
+    scheduler = BackgroundScheduler()
+else:
+    scheduler = None
 
 
 # =========================
@@ -116,31 +127,31 @@ init_db()
 # =========================
 # CONFIGURACIÓN DEL MODELO
 # =========================
-MODEL_PATH = 'garbage_model.h5'
-
-# Debes usar las mismas clases detectadas en el entrenamiento
-CLASS_NAMES = ['cardboard', 'glass', 'metal', 'paper', 'plastic', 'trash']
-
-# Si existe class_indices.json (guardado por train.py), cargar el orden real de clases
+# -------------------------
+# Decoradores de autenticación
+# Definidos temprano para poder usarlos en rutas que aparecen más arriba en el archivo
+def login_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if 'user' not in session:
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated
+# Usar ruta absoluta relativa al archivo para evitar problemas de working dir en PaaS
+CI_PATH = Path(__file__).parent / 'class_indices.json'
+CLASS_NAMES = None
 try:
-    import json
-    # Usar ruta absoluta relativa al archivo para evitar problemas de working dir en PaaS
-    CI_PATH = Path(__file__).parent / 'class_indices.json'
     if CI_PATH.exists():
-        try:
-            with open(CI_PATH, 'r', encoding='utf-8') as fh:
-                ci = json.load(fh)
-            # invertir mapping {class: index} -> list ordered by index
-            max_index = max(ci.values())
-            labels = [None] * (max_index + 1)
-            for cls, idx in ci.items():
-                labels[idx] = cls
-            CLASS_NAMES = labels
-            print('[INFO] Cargado class_indices.json desde', CI_PATH, 'clases ordenadas:', CLASS_NAMES)
-            logging.info('Cargado class_indices.json desde %s', CI_PATH)
-        except Exception as e:
-            print('[WARN] Error leyendo/parsing class_indices.json:', e)
-            logging.warning('Error leyendo/parsing %s: %s', CI_PATH, e)
+        with open(CI_PATH, 'r', encoding='utf-8') as fh:
+            ci = json.load(fh)
+        # invertir mapping {class: index} -> list ordered by index
+        max_index = max(ci.values())
+        labels = [None] * (max_index + 1)
+        for cls, idx in ci.items():
+            labels[idx] = cls
+        CLASS_NAMES = labels
+        print('[INFO] Cargado class_indices.json desde', CI_PATH, 'clases ordenadas:', CLASS_NAMES)
+        logging.info('Cargado class_indices.json desde %s', CI_PATH)
     else:
         print('[INFO] No se encontró class_indices.json en', CI_PATH)
         logging.info('No se encontró class_indices.json en %s', CI_PATH)
