@@ -18,6 +18,7 @@
             margin: 0; 
             padding: 0; 
             background: #f4f4f9 url('/static/uploads/aqua_logo.jpg') center/cover no-repeat fixed;
+            position: relative; /* needed so overlay sits correctly relative to content */
         }
 
         /* 🔹 Barra superior */
@@ -113,8 +114,20 @@
             display: block; 
         }
 
+        /* Overlay between page background and content to improve text contrast */
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0; /* top:0; right:0; bottom:0; left:0; */
+            background: rgba(0,0,0,0.35);
+            pointer-events: none; /* allow clicks through overlay */
+            z-index: 1;
+        }
+
         .container { 
             padding: 30px; 
+            position: relative; /* create stacking context so content sits above overlay */
+            z-index: 2;
         }
 
         .card { 
