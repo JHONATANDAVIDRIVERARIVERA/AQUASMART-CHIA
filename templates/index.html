@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Inicio - Clasificador{% endblock %}
+{% block title %}Inicio - AQUA SMART{% endblock %}
 
 {% block content %}
 <style>
@@ -27,7 +27,7 @@ body {
     min-height: calc(100vh - 120px);
 }
 
-/* 🔹 Tarjeta de Clasificador */
+/* 🔹 Tarjeta de AQUA SMART */
 .classify-card {
     background: #ffffff;
     border-radius: 20px;
@@ -258,9 +258,9 @@ img {
 </style>
 
 <div class="main-container">
-    <!-- 🔸 Clasificador de Residuos -->
+    <!-- 🔸 AQUA SMART -->
     <div class="classify-card">
-        <h1>Clasificador de Residuos</h1>
+    <h1>AQUA SMART</h1>
         <form id="uploadForm" action="/predict" method="post" enctype="multipart/form-data">
             <input type="file" id="fileInput" name="file" accept="image/*" required>
             <button type="submit" style="margin-top:15px;">Clasificar imagen</button>
@@ -300,9 +300,9 @@ img {
         </form>
     </div>
 
-    <!-- 🔸 Información del clasificador -->
+    <!-- 🔸 Información de AQUA SMART -->
     <div class="info-card">
-        <h2>♻️ ¿Qué hace este clasificador?</h2>
+        <h2>♻️ ¿Qué hace AQUA SMART?</h2>
         <p>
             Este sistema utiliza Inteligencia Artificial y un modelo de Machine Learning 
             entrenado con miles de imágenes de residuos comunes para reconocer de qué material está hecho un objeto.
@@ -318,7 +318,7 @@ img {
             <li>Metal</li>
         </ul>
         <p>
-            El propósito del clasificador es fomentar la educación ambiental 
+            El propósito de AQUA SMART es fomentar la educación ambiental 
             y ayudar a las personas a depositar cada residuo en el contenedor correcto, 
             promoviendo una cultura de reciclaje responsable y reducción de contaminación.
         </p>

@@ -1,6 +1,6 @@
 """
 train.py
-Script de entrenamiento mejorado para el proyecto CLASIFICADOR.
+Script de entrenamiento mejorado para el proyecto AQUA SMART.
 
 Características:
 - Usa transfer learning con MobileNetV2 (pesos imagenet) para mejorar precisión.
