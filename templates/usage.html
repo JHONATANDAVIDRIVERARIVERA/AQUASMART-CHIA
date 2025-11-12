@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Registrar consumo - AQUA SMART{% endblock %}
+
+{% block content %}
+<h2>Registrar consumo de agua</h2>
+<p>Ingresa cuánto llevas gastado este mes (puede ser litros o monto en tu moneda).</p>
+<form method="post" action="{{ url_for('usage') }}">
+  <label for="cantidad">Cantidad (ej. 123.45):</label>
+  <input type="text" id="cantidad" name="cantidad" required>
+  <br>
+  <label for="nota">Nota (opcional):</label>
+  <input type="text" id="nota" name="nota">
+  <br>
+  <button type="submit">Guardar</button>
+</form>
+
+<h3>Entradas recientes</h3>
+<ul>
+  {% for e in recent %}
+    <li>{{ e.timestamp }} — {{ e.cantidad }} {% if e.nota %} ({{ e.nota }}){% endif %}</li>
+  {% else %}
+    <li>No hay registros aún.</li>
+  {% endfor %}
+</ul>
+
+{% endblock %}

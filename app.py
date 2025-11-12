@@ -7,6 +7,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from pathlib import Path
 from datetime import timedelta
 import threading
+from datetime import datetime, date
+import json
+from apscheduler.schedulers.background import BackgroundScheduler
 
 # Variables globales para TensorFlow/modelo
 load_model = None
@@ -54,6 +57,24 @@ app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'dev-secret-key')
 # Hacer que las sesiones sean permanentes por defecto y duren 30 días
 app.permanent_session_lifetime = timedelta(days=30)
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+# Crear carpeta data para persistencia simple de consumos y alertas
+DATA_DIR = Path(__file__).parent / 'data'
+os.makedirs(DATA_DIR, exist_ok=True)
+USAGE_FILE = DATA_DIR / 'water_usage.json'
+ALERTS_FILE = DATA_DIR / 'alerts.json'
+
+# Inicializar archivos JSON si no existen
+if not USAGE_FILE.exists():
+    with open(USAGE_FILE, 'w', encoding='utf-8') as fh:
+        json.dump([], fh)
+
+if not ALERTS_FILE.exists():
+    with open(ALERTS_FILE, 'w', encoding='utf-8') as fh:
+        json.dump([], fh)
+
+# Scheduler para tareas periódicas (comprobación diaria)
+scheduler = BackgroundScheduler()
+
 
 # =========================
 # BASE DE DATOS DE USUARIOS (SQLite)
@@ -175,7 +196,147 @@ def index():
     # Página principal protegida; requiere login
     if 'user' not in session:
         return redirect(url_for('login'))
-    return render_template('index.html', prediction=None, user=session.get('user'))
+    # Leer alertas recientes (si las hay)
+    try:
+        with open(ALERTS_FILE, 'r', encoding='utf-8') as fh:
+            alerts = json.load(fh)
+    except Exception:
+        alerts = []
+    return render_template('index.html', prediction=None, user=session.get('user'), alerts=alerts)
+
+
+@app.route('/usage', methods=['GET', 'POST'])
+@login_required
+def usage():
+    """Formulario para registrar lo que llevas gastado este mes en agua.
+    Se guarda cada entrada con fecha y cantidad (por ejemplo litros o monto en moneda).
+    """
+    if request.method == 'POST':
+        cantidad = request.form.get('cantidad')
+        nota = request.form.get('nota', '')
+        try:
+            cantidad_val = float(cantidad)
+        except Exception:
+            flash('Cantidad inválida, usa solo números (ej. 123.45).', 'error')
+            return redirect(url_for('usage'))
+
+        entry = {
+            'user': session.get('user'),
+            'cantidad': cantidad_val,
+            'nota': nota,
+            'timestamp': datetime.utcnow().isoformat()
+        }
+        try:
+            with open(USAGE_FILE, 'r', encoding='utf-8') as fh:
+                data = json.load(fh)
+        except Exception:
+            data = []
+        data.append(entry)
+        with open(USAGE_FILE, 'w', encoding='utf-8') as fh:
+            json.dump(data, fh, ensure_ascii=False, indent=2)
+
+        flash('Consumo guardado correctamente.', 'success')
+        return redirect(url_for('usage'))
+
+    # GET: mostrar formulario y entradas recientes
+    try:
+        with open(USAGE_FILE, 'r', encoding='utf-8') as fh:
+            data = json.load(fh)
+    except Exception:
+        data = []
+    # filtrar últimas 30 entradas
+    recent = list(reversed(data))[:30]
+    return render_template('usage.html', user=session.get('user'), recent=recent)
+
+
+def analyze_usages_and_generate_alerts():
+    """Función que el scheduler llamará diariamente para analizar usos y generar alertas.
+    Lógica simple:
+    - Calcula el consumo medio diario del mes (si hay suficientes datos).
+    - Si el consumo de los últimos días supera en X el promedio -> posible fuga/infraestructura.
+    - Si el consumo diario excede un umbral absoluto (configurable) -> alerta de consumo alto.
+    """
+    try:
+        with open(USAGE_FILE, 'r', encoding='utf-8') as fh:
+            data = json.load(fh)
+    except Exception:
+        data = []
+
+    if not data:
+        return
+
+    # Agrupar por día (UTC) y sumar cantidades
+    daily = {}
+    for e in data:
+        try:
+            ts = datetime.fromisoformat(e['timestamp'])
+        except Exception:
+            continue
+        day = ts.date().isoformat()
+        daily.setdefault(day, 0.0)
+        daily[day] += float(e.get('cantidad', 0.0))
+
+    # Ordenar fechas
+    dates = sorted(daily.keys())
+    values = [daily[d] for d in dates]
+    # Calcular promedio de últimos 7 días si hay, sino global
+    if len(values) >= 7:
+        recent_vals = values[-7:]
+    else:
+        recent_vals = values
+    avg_recent = sum(recent_vals) / max(1, len(recent_vals))
+
+    # Último día registrado
+    last_day = dates[-1]
+    last_val = daily[last_day]
+
+    alerts = []
+
+    # Umbral relativo: si último día > 2.5x promedio -> posible fuga
+    if avg_recent > 0 and last_val > (avg_recent * 2.5):
+        alerts.append({
+            'level': 'critical',
+            'message': f'Posible fuga o problema en la infraestructura: consumo del día {last_day} = {last_val:.2f} (más de 2.5x el promedio reciente {avg_recent:.2f}).',
+            'timestamp': datetime.utcnow().isoformat()
+        })
+
+    # Umbral absoluto (configurable por env). Si último_val > ABS_THRESHOLD -> alerta de consumo alto
+    try:
+        abs_threshold = float(os.environ.get('AQUA_ABS_THRESHOLD', '500'))
+    except Exception:
+        abs_threshold = 500.0
+    if last_val > abs_threshold:
+        alerts.append({
+            'level': 'warning',
+            'message': f'Consumo alto detectado en {last_day}: {last_val:.2f} (umbral {abs_threshold}).',
+            'timestamp': datetime.utcnow().isoformat()
+        })
+
+    # Guardar alertas en archivo (append)
+    if alerts:
+        try:
+            with open(ALERTS_FILE, 'r', encoding='utf-8') as fh:
+                existing = json.load(fh)
+        except Exception:
+            existing = []
+        existing.extend(alerts)
+        with open(ALERTS_FILE, 'w', encoding='utf-8') as fh:
+            json.dump(existing[-100:], fh, ensure_ascii=False, indent=2)
+        # También loguear
+        for a in alerts:
+            logging.warning('Alerta generada: %s', a['message'])
+
+
+# Programar job diario a las 08:00 UTC (puedes ajustar mediante env var SCHED_HOUR)
+def start_scheduler():
+    try:
+        sched_hour = int(os.environ.get('AQUA_SCHED_HOUR', '8'))
+    except Exception:
+        sched_hour = 8
+    scheduler.add_job(analyze_usages_and_generate_alerts, 'cron', hour=sched_hour, minute=0)
+    scheduler.start()
+
+start_scheduler()
 
 # =========================
 # RUTA PARA SUBIR Y CLASIFICAR

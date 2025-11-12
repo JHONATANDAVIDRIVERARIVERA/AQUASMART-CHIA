@@ -66,6 +66,16 @@
             align-items: center; 
         }
 
+        /* Mostrar badge de alertas si existen */
+        .alert-badge {
+            background: #ffcc00;
+            color: #222;
+            padding: 6px 10px;
+            border-radius: 12px;
+            font-weight: 700;
+            margin-right: 12px;
+        }
+
         .nav-item { 
             margin: 0 10px; 
             position: relative; 
@@ -152,6 +162,9 @@
             <div class="nav-item" id="model-status-badge" style="margin-right:12px; color: #fff; font-weight:600;">
                 Modelo: comprobando...
             </div>
+            {% if alerts and alerts|length > 0 %}
+                <div class="nav-item alert-badge">ALERTAS {{ alerts|length }}</div>
+            {% endif %}
             {% if session.get('user') %}
                 <div class="nav-item">Bienvenido, <strong>{{ session.get('user') }}</strong></div>
                 <div class="nav-item dropdown">
