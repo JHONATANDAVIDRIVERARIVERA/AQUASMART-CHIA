@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block title %}Registro - Clasificador{% endblock %}
+
+{% block content %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+body {
+    background-image: url('/static/registrar.png');
+    background-size: auto;
+    background-position: right;
+    background-repeat: repeat;
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+    .register-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: calc(100vh - 120px);
+        padding: 20px;
+    }
+
+    .register-card {
+        background: #3d3939;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        padding: 40px;
+        text-align: center;
+        width: 380px;
+        max-width: 95%;
+    }
+
+    h1 {
+        color: #2d6a4f;
+        margin-bottom: 25px;
+        font-size: 26px;
+        font-weight: 600;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 15px;
+        outline: none;
+        transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    input[type="text"]:focus,
+    input[type="password"]:focus {
+        border-color: #2d6a4f;
+        box-shadow: 0 0 5px #95d5b2;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        background: #2d6a4f;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
+        transition: background 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+        background: #1b4332;
+        transform: scale(1.02);
+    }
+
+    .msg {
+        margin-bottom: 15px;
+        text-align: left;
+    }
+
+    .error {
+        color: #b02a37;
+        background: #f8d7da;
+        padding: 10px;
+        border-radius: 6px;
+    }
+
+    .success {
+        color: #0f5132;
+        background: #d1e7dd;
+        padding: 10px;
+        border-radius: 6px;
+    }
+
+    p {
+        margin-top: 15px;
+        font-size: 14px;
+    }
+
+    a {
+        color: #2d6a4f;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s;
+    }
+
+    a:hover {
+        color: #1b4332;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+        .register-card {
+            padding: 25px;
+        }
+
+        h1 {
+            font-size: 22px;
+        }
+    }
+</style>
+
+<div class="register-container">
+    <div class="register-card">
+        <h1>Crear cuenta</h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="msg">
+              {% for category, message in messages %}
+                <div class="{{ category }}">{{ message }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <form action="{{ url_for('register') }}" method="post">
+            <input type="text" name="username" placeholder="Usuario" required>
+            <input type="password" name="password" placeholder="Contraseña" required>
+            <input type="password" name="password2" placeholder="Confirmar contraseña" required>
+            <button type="submit">Registrar</button>
+        </form>
+
+        <p>¿Ya tienes cuenta? <a href="{{ url_for('login') }}">Inicia sesión aquí</a></p>
+    </div>
+</div>
+{% endblock %}

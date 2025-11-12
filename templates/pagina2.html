@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fase 2 - Entendimiento e Ingeniería de Datos</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+ /* 🔹 Fondo general */
+body {
+    background-image: url('/static/fondopagina2.jpg');
+    background-size: auto;
+    background-position: center;
+    background-repeat: repeat;
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+    /* Barra superior */
+    header {
+      background-color: #2d6a4f;
+      color: white;
+      text-align: center;
+      padding: 15px 0;
+      font-size: 20px;
+      font-weight: 600;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
+    }
+
+    header button {
+      background-color: #40916c;
+      border: none;
+      color: white;
+      font-weight: 600;
+      padding: 8px 18px;
+      font-size: 15px;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    header button:hover {
+      background-color: #1b4332;
+      transform: scale(1.05);
+    }
+
+    main {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 30px;
+      margin: 40px 20px;
+      flex-wrap: wrap;
+    }
+
+    .content {
+      background: #ffffff;
+      padding: 35px;
+      border-radius: 20px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      width: 65%;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .content:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    }
+
+    .sidebar {
+      background: #d8f3dc;
+      border-radius: 15px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+      padding: 25px;
+      width: 23%;
+      height: fit-content;
+    }
+
+    .sidebar h3 {
+      color: #1b4332;
+      border-bottom: 2px solid #74c69d;
+      padding-bottom: 8px;
+      margin-bottom: 15px;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .sidebar ul li {
+      margin: 12px 0;
+    }
+
+    .sidebar ul li a {
+      text-decoration: none;
+      color: #2d6a4f;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    .sidebar ul li a:hover {
+      color: #1b4332;
+      font-weight: 600;
+      text-decoration: underline;
+    }
+
+    h2 {
+      color: #2d6a4f;
+      border-left: 5px solid #2d6a4f;
+      padding-left: 10px;
+      margin-top: 30px;
+      font-weight: 600;
+    }
+
+    p {
+      line-height: 1.7;
+      text-align: justify;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #555;
+      font-size: 14px;
+    }
+
+    @media (max-width: 900px) {
+      main {
+        flex-direction: column;
+        align-items: center;
+      }
+      .content, .sidebar {
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <button onclick="window.location.href='{{ url_for('index') }}'">Menú</button>
+    <span>Fase 2: Entendimiento e Ingeniería de Datos</span>
+    <button onclick="window.location.href='{{ url_for('pagina1') }}'">Fase 1</button>
+    <button onclick="window.location.href='{{ url_for('pagina3') }}'">Fase 3</button>
+
+  </header>
+
+  <main>
+    <div class="content">
+      <h2 id="introduccion">Introducción</h2>
+      <p>
+        La Fase 2, denominada <b>Entendimiento e Ingeniería de Datos</b>, tiene como propósito analizar, preparar y transformar los datos que serán utilizados para el desarrollo del modelo de aprendizaje automático. En esta etapa se estudia la procedencia, la estructura, la calidad y la relevancia de los datos, con el fin de garantizar que el modelo de inteligencia artificial reciba información limpia, coherente y representativa del problema de negocio planteado en la Fase 1.
+      </p>
+      <p>
+        El éxito de un proyecto de aprendizaje automático depende en gran medida de la calidad de los datos. Por ello, esta fase busca comprender la naturaleza de los conjuntos de datos, identificar patrones, detectar valores atípicos o inconsistentes, y aplicar las transformaciones necesarias para su posterior procesamiento y entrenamiento.
+      </p>
+
+      <h2 id="recoleccion">1. Recolección y comprensión de los datos</h2>
+      <p>
+        La primera etapa del entendimiento de datos consiste en <b>identificar las fuentes de información</b>. En este proyecto, las imágenes provienen de un conjunto de datos de residuos sólidos clasificados por tipo de material (plástico, vidrio, metal, papel, cartón y orgánicos). Cada imagen contiene variaciones en condiciones de luz, ángulos, fondos y tamaños, lo que hace necesario un preprocesamiento adecuado.
+      </p>
+      <p>
+        Se recopilaron más de <b>2.000 imágenes</b> distribuidas de forma equitativa entre las categorías. Los datos fueron obtenidos de repositorios abiertos como <i>Kaggle</i> y <i>Google Dataset Search</i>, asegurando que sean públicos y aptos para uso académico. Posteriormente, se realizó una inspección visual y estadística para evaluar la diversidad de las muestras, la resolución promedio, los formatos de archivo y la distribución de clases.
+      </p>
+
+      <h2 id="limpieza">2. Limpieza y depuración de los datos</h2>
+      <p>
+        El proceso de limpieza es esencial para eliminar errores o inconsistencias. Se aplicaron las siguientes acciones:
+      </p>
+      <ul>
+        <li>Eliminación de imágenes duplicadas o corruptas.</li>
+        <li>Conversión de formatos no compatibles (por ejemplo, de <code>.png</code> a <code>.jpg</code>).</li>
+        <li>Normalización de dimensiones (todas las imágenes se ajustaron a 224x224 píxeles).</li>
+        <li>Verificación de etiquetas incorrectas o inconsistentes.</li>
+        <li>Revisión de la cantidad de muestras por clase para evitar desbalance de datos.</li>
+      </ul>
+      <p>
+        Este paso permitió garantizar que el modelo no aprenda patrones erróneos o sesgos causados por la calidad desigual de las imágenes.
+      </p>
+
+      <h2 id="preprocesamiento">3. Preprocesamiento de datos</h2>
+      <p>
+        Una vez depurados, los datos fueron sometidos a un conjunto de transformaciones automáticas destinadas a mejorar el rendimiento del modelo. Las principales técnicas utilizadas fueron:
+      </p>
+      <ul>
+        <li><b>Escalamiento y normalización:</b> los valores de píxel fueron reescalados en un rango entre 0 y 1.</li>
+        <li><b>Aumento de datos (Data Augmentation):</b> se aplicaron rotaciones, recortes, espejado horizontal y variaciones de brillo.</li>
+        <li><b>División del conjunto de datos:</b> los datos se dividieron en tres subconjuntos: 70% entrenamiento, 20% validación y 10% prueba.</li>
+      </ul>
+      <p>
+        Estas etapas son fundamentales para que el modelo generalice correctamente y no dependa de ejemplos específicos vistos durante el entrenamiento.
+      </p>
+
+      <h2 id="caracteristicas">4. Ingeniería de características</h2>
+      <p>
+        En la ingeniería de características se busca <b>extraer información relevante</b> que facilite el aprendizaje del modelo. Para las imágenes, esto implica utilizar redes neuronales convolucionales que sean capaces de identificar patrones visuales, como bordes, texturas o colores característicos de cada tipo de residuo.
+      </p>
+      <p>
+        Se utilizó la arquitectura <b>DenseNet121</b> como base preentrenada sobre el conjunto <i>ImageNet</i>, la cual permite aprovechar características visuales previamente aprendidas y adaptarlas a la tarea de clasificación de residuos. El modelo fue ajustado (<i>fine-tuning</i>) para reconocer las seis categorías definidas.
+      </p>
+
+      <h2 id="evaluacion">5. Evaluación de la calidad de los datos</h2>
+      <p>
+        Antes del entrenamiento, se aplicaron métricas de evaluación de calidad tales como:
+      </p>
+      <ul>
+        <li><b>Completitud:</b> 100% de las imágenes con etiquetas válidas.</li>
+        <li><b>Uniformidad:</b> todas las imágenes con la misma resolución y formato.</li>
+        <li><b>Equilibrio de clases:</b> diferencia menor al 10% entre categorías.</li>
+        <li><b>Ausencia de ruido:</b> sin texto ni marcas interferentes.</li>
+      </ul>
+
+      <h2 id="conclusion">6. Conclusión de la fase</h2>
+      <p>
+        La Fase 2 permitió establecer una base de datos sólida y homogénea para el desarrollo del sistema de clasificación automática de residuos. A través del entendimiento, limpieza, transformación y validación de los datos, se garantizó la integridad del conjunto de entrenamiento, lo que se traduce en un modelo más preciso, confiable y útil para la toma de decisiones ambientales.
+      </p>
+      <p>
+        El resultado de esta fase es un conjunto de datos preparado y estructurado que servirá como insumo principal para la siguiente etapa: <b>Fase 3 – Modelado y Entrenamiento del Sistema.</b>
+      </p>
+
+      <h2 id="referencias">Referencias</h2>
+      <ul>
+        <li>Banco Mundial (2022). <i>What a Waste 2.0: A Global Snapshot of Solid Waste Management to 2050.</i></li>
+        <li>Chollet, F. (2018). <i>Deep Learning with Python.</i> Manning Publications.</li>
+        <li>Kaggle Datasets. (2024). <i>Waste Classification Data.</i></li>
+        <li>TensorFlow Documentation. (2024). <i>Image Preprocessing and Data Augmentation.</i></li>
+      </ul>
+
+      <footer>
+        Proyecto: Clasificación de Residuos con DenseNet121 | Fase 2 - Entendimiento e Ingeniería de Datos
+      </footer>
+    </div>
+
+    <div class="sidebar">
+      <h3>Contenido</h3>
+      <ul>
+        <li><a href="#introduccion">Introducción</a></li>
+        <li><a href="#recoleccion">Recolección y comprensión de los datos</a></li>
+        <li><a href="#limpieza">Limpieza y depuración</a></li>
+        <li><a href="#preprocesamiento">Preprocesamiento de datos</a></li>
+        <li><a href="#caracteristicas">Ingeniería de características</a></li>
+        <li><a href="#evaluacion">Evaluación de la calidad</a></li>
+        <li><a href="#conclusion">Conclusión</a></li>
+        <li><a href="#referencias">Referencias</a></li>
+      </ul>
+    </div>
+  </main>
+</body>
+</html>
